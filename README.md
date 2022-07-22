@@ -1,4 +1,4 @@
-## Create Lambda function
+# Get edits count for wiki page
 Lambda function to get latest_update_time page and number_updates for last month
 
 ## Create Lambda function
