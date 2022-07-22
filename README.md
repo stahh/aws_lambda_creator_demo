@@ -9,4 +9,6 @@ To create API [gateway](https://docs.aws.amazon.com/lambda/latest/dg/services-ap
 
 ## Check Lambda function
 run request
+```bash
 curl -d {'title': 'Washington,_D.C.'} https://<API_GATEWAY_URL>
+```
