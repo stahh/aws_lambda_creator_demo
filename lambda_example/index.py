@@ -103,6 +103,11 @@ def lambda_handler(event, context):
     """
     logger.info(event.get('queryStringParameters'))
     query_string = event.get('queryStringParameters')
+    if not query_string:
+        resp = {'statusCode': 400,
+                'body': json.dumps({'message': 'ERROR : Bad Request'
+                                               '(Missing query parameters).'})}
+        return resp
     title = query_string.get('title')
     if not title:
         resp = {'statusCode': 400,
