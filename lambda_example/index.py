@@ -43,7 +43,7 @@ def _get(url, source, params=None):
         url, params=params, headers={
             'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/'
                           '537.36 (KHTML, like Gecko) Chrome/103.0.0.0 '
-                          'Safari/537.36'})
+                          'Safari/537.36'}, timeout=60)
     return parse(response.text, source)
 
 
@@ -56,10 +56,12 @@ def save(title, date, month_count):
     :return: None
     """
     file_name = '{}.json'.format(title)
+    bucket_name = 'lambda-demo'
     data = {'number_updates_last_month': month_count,
             'latest_update_time': date.isoformat()}
+    logger.info(data)
     s3_client = boto3.client('s3')
-    s3_client.put_object(Bucket='upside', Key=file_name, Body=json.dumps(data))
+    s3_client.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(data))
 
 
 def get_latest_update(title):
@@ -99,30 +101,38 @@ def lambda_handler(event, context):
     :param context: object: lambda context
     :return: dict: status code and message
     """
-    title = event.get('title')
+    logger.info(event.get('queryStringParameters'))
+    query_string = event.get('queryStringParameters')
+    title = query_string.get('title')
     if not title:
         resp = {'statusCode': 400,
-                'body': {'message': 'ERROR : Bad Request(Missing title).'}}
+                'body': json.dumps({'message': 'ERROR : Bad Request'
+                                               '(Missing title).'})}
         return resp
     title = title.strip()
     try:
         last_date = get_latest_update(title)
+        logger.info(f'Latest update: {last_date}')
         month_count = get_month_count(title, last_date)
+        logger.info(f'Month count: {month_count}')
         save(title, last_date, month_count)
     except Exception as e:
         logging.error(e)
         resp = {'statusCode': 500,
-                'body': {'message': f'ERROR : {e}'}}
+                'body': json.dumps({'message': f'ERROR : {e}'})}
         return resp
 
     resp = {
         'statusCode': 200,
-        'body': {'message': f'File {title}.json saved successful.'}
+        'body': json.dumps({'message': f'File {title}.json saved successful. '
+                            f'Latest update: {last_date}. '
+                            f'Month counts: {month_count}'})
     }
 
     return resp
 
 
 if __name__ == '__main__':
-    a = lambda_handler({'title': 'Washington,_D.C.'}, None)
+    a = lambda_handler(
+        {'title': 'Washington,_D.C.'}, None)
     print(a)
