@@ -1,0 +1,12 @@
+AWS_ACCESS_KEY = ''
+AWS_SECRET_KEY = ''
+API_BASE_PATH = 'demoapi'
+API_STAGE = 'test'
+LAMBDA_NAME = 'lambda_example'
+LAMBDA_FILENAME = 'lambda_example/index.py'
+LAMBDA_HANDLER_NAME = 'index.lambda_handler'
+API_NAME = f'{LAMBDA_NAME}-rest-api'
+TEST_PARAMS = {'title': 'Washington,_D.C.'}
+IS_REMOVE = True
+IS_API_CREATE = True
+IS_REQUIREMENTS = True
