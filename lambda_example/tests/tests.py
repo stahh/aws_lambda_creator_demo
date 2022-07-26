@@ -2,9 +2,10 @@ from datetime import datetime
 import unittest
 from mock import patch, MagicMock
 import json
+import sys
+sys.path.extend(['../../', '../', './'])
 
-from lambda_example.index import lambda_handler, parse
-import lambda_example
+from lambda_example import index
 
 DT = datetime.strptime('12:33, 10 May 2022', '%H:%M, %d %B %Y')
 LU = '00:48, 23 July 2022'
@@ -26,12 +27,12 @@ class TestHandler(unittest.TestCase):
     @patch('lambda_example.index._get')
     def test_request(self, mocked_get):
         mocked_get.return_value = LU
-        wiki = lambda_example.index._get(
+        wiki = index._get(
             'https://en.wikipedia.org/w/index.php', S1,
             {'title': 'Washington,_D.C.', 'action': 'history'})
         self.assertEqual(LU, wiki)
         mocked_get.return_value = MC
-        xtools = lambda_example.index._get(
+        xtools = index._get(
             'https://xtools.wmflabs.org/articleinfo/en.wikipedia.org/'
             'Washington,_D.C./2022-07-01/2022-07-23#month-counts', S2)
         self.assertEqual(MC, xtools)
@@ -42,7 +43,7 @@ class TestHandler(unittest.TestCase):
     @patch('lambda_example.index.save', MagicMock(return_value=None))
     def test_response(self):
         """Test handler main function for successfully response"""
-        response = lambda_handler(
+        response = index.lambda_handler(
             {'queryStringParameters': {'title': 'Washington,_D.C.'}}, None)
         self.assertEqual(200, response['statusCode'])
         self.assertEqual(
@@ -52,9 +53,9 @@ class TestHandler(unittest.TestCase):
             f'Month counts: 13')
 
     def test_parsing(self):
-        wiki = parse(self.read(f'{S1}.html'), S1)
+        wiki = index.parse(self.read(f'{S1}.html'), S1)
         self.assertEqual(LU, wiki)
-        xtools = parse(self.read(f'{S2}.html'), S2)
+        xtools = index.parse(self.read(f'{S2}.html'), S2)
         self.assertEqual(MC, xtools)
 
 

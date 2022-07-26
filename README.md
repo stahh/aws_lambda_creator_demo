@@ -31,3 +31,10 @@ python lambda_with_api_demo.py
 
 Note: if you have changed your lambda and want to upload a new one with script, 
 you need recreate zip package with setup.sh
+
+## Test
+```bash
+cd lambda_example/tests
+
+python tests.py -v
+```
