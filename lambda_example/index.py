@@ -139,5 +139,5 @@ def lambda_handler(event, context):
 
 if __name__ == '__main__':
     a = lambda_handler(
-        {'title': 'Washington,_D.C.'}, None)
+        {'queryStringParameters': {'title': 'Washington,_D.C.'}}, None)
     print(a)
